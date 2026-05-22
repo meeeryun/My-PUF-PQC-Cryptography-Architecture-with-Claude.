@@ -1,6 +1,6 @@
 # My-PUF-PQC-Cryptography-Architecture-with-Claude.
 I wanna integrate PQC with PUF, so I simulate this architecture with Claude in Python
-
+(이건 AI가 아니라 제가 다 작성했습니다...)
 
 ## 1. 라이브러리
 ```python 
