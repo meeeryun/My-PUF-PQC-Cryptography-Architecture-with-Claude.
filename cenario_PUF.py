@@ -26,9 +26,9 @@
 
 """
 
-import hashlib                                 # LWE mapping
-import hmac                                    # LWE mapping
-import struct                                  # 
+import hashlib                                
+import hmac                                   
+import struct                                  
 import time
 import gc
 import os
