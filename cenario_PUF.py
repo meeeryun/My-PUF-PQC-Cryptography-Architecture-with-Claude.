@@ -40,7 +40,7 @@ from typing import List, Optional, Tuple
 # ═══════════════════════════════════════════════════════════════════════════
 
 N       = 8    # LWE 차원 (공개 행렬 A의 크기: N×N)
-Q       = 251  # 소수 모듈러스.  q/4 = 62 > 최대노이즈 17  → 복호화 항상 성공
+Q       = 251  # 소수 모듈러스.  q/4 = 62 > 17 (Max Noise)  → 복호화 항상 성공
 ETA     = 1    # 오류 분포 파라미터. CBD_η → 값 범위 [-η, η]
 SS_BITS = 256  # 공유 비밀(Shared Secret) 길이 (비트)
 
@@ -54,9 +54,9 @@ class PUFSimulator:
         self.device_id     = device_id
         self.device_secret = hashlib.sha256(
             f"PUF_PHYSICAL_FINGERPRINT::{device_id}".encode()
-        ).digest()  # 32바이트 고유 시크릿
+        ).digest()  # 32바이트 고유 ID
 
-    def get_response(self, challenge: bytes) -> bytes:
+    def get_response(self, challenge: bytes) -> bytes: # HMAC-SHA256 기반
         return hmac.new(
             key=self.device_secret,
             msg=challenge,
@@ -65,7 +65,6 @@ class PUFSimulator:
 
     def derive_kyber_seed(self, challenge: bytes) -> bytes:
         raw_response = self.get_response(challenge)
-        # "KYBER_SEED_v1::" 접두어: 다른 용도의 파생 키와 도메인 분리
         return hashlib.sha512(b"KYBER_SEED_v1::" + raw_response).digest()
 
 
