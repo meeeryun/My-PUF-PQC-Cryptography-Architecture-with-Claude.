@@ -1,36 +1,34 @@
 """
 ╔══════════════════════════════════════════════════════════════════════════╗
-║      PUF + Kyber(ML-KEM) 통합 보안 메커니즘 — PoC 시뮬레이션            ║
-║                                                                          ║
+║      PUF + Kyber(ML-KEM) 통합 보안 메커니즘 — PoC 시뮬레이션              ║
+║      PUF + Kyber(ML-KEM) Integration Security Mechanism - PoC Simul.     ║
 ║  [목적]                                                                  ║
 ║    - PUF(Physical Unclonable Function)의 CRP 메커니즘과                  ║
-║      양자내성 암호 Kyber(ML-KEM)를 결합한 휘발성 키 관리 시뮬레이션      ║
-║    - 비밀키를 메모리에 상시 저장하지 않고, 필요 시 PUF로 재생성 후       ║
-║      즉시 삭제함으로써 측면 채널 공격(SCA) 위협 표면 최소화              ║
-║    - 암호화는 공개키만으로 수행 가능 → 고가용성 유지                     ║
+║      양자내성 암호 Kyber(ML-KEM)를 결합한 휘발성 키 관리 시뮬레이션        ║
+║    - 비밀키를 메모리에 상시 저장하지 않고, 필요 시 PUF로 재생성 후         ║
+║      즉시 삭제함으로써 측면 채널 공격(SCA) 위협 표면 최소화                ║
+║    - 암호화는 공개키만으로 수행 가능 → 고가용성 유지                       ║
 ║                                                                          ║
-║  [알고리즘 파라미터 (교육용 간소화)]                                      ║
-║    - LWE 차원  : N = 8    (실제 Kyber-512: N = 256)                      ║
-║    - 모듈러 소수: Q = 251  (실제 Kyber: Q = 3329)                        ║
-║    - 오류 범위 : η = 1    (결과값 범위 [-1, 0, 1])                       ║
+║  [알고리즘 파라미터 (교육용 간소화)]                                       ║
+║    - LWE 차원  : N = 8    (실제 Kyber-512: N = 256)                       ║
+║    - 모듈러 소수: Q = 251  (실제 Kyber: Q = 3329)                         ║
+║    - 오류 범위 : η = 1    (결과값 범위 [-1, 0, 1])                        ║
 ║    - 공유비밀  : 256비트   (32바이트)                                     ║
 ║                                                                          ║
 ║  [복호화 정확성 수학적 보장]                                              ║
-║    최대 노이즈 = |e^T·r + e2 - s^T·e1| ≤ N + 1 + N = 17               ║
-║    q / 4      = 251 / 4 ≈ 62  →  17 < 62  ✓  항상 정확한 복호화        ║
+║    최대 노이즈(Max Noise) = |e^T·r + e2 - s^T·e1| ≤ N + 1 + N = 17        ║
+║    q / 4      = 251 / 4 ≈ 62  →  17 < 62  ✓ Always accurate Decryp.      ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 
 [외부 의존성]
   - 표준 라이브러리만 사용 (hashlib, hmac, struct, time, gc, os)
-  - 별도 pip 설치 불필요
+  - 별도 pip 설치 불필요. Don't have to download other pip.
 
-[실행 방법]
-  $ python puf_kyber_poc.py
 """
 
-import hashlib
-import hmac
-import struct
+import hashlib                                 # LWE mapping
+import hmac                                    # LWE mapping
+import struct                                  # 
 import time
 import gc
 import os
@@ -544,13 +542,6 @@ def main() -> None:
     print(f"║  암호화 평균 지연      : {avg_t['encap']:>8.4f} ms (PUF 불필요 → 고가용성) ║")
     print(f"║  복호화 평균 지연      : {avg_t['decap'] + avg_t['keygen'] + avg_t['puf']:>8.4f} ms (PUF+KeyGen+Decap 합산) ║")
     print("╚════════════════════════════════════════════════════════════════╝")
-    print()
-    print("  [참고] 실제 배포 시 추가 구현이 필요한 항목:")
-    print("    · Fuzzy Extractor   : PUF 비트 오류 보정")
-    print("    · FO 변환           : IND-CCA2 보안성 확보 (Kyber 표준 준수)")
-    print("    · ctypes.memset()   : Python GC 우회한 확실한 메모리 제로화")
-    print("    · AES-GCM / ChaCha20: 메시지 암호화 (현재 XOR 스트림 대체)")
-    print("    · HSM 통합          : 비밀키 연산을 하드웨어 보안 경계 내부에서 수행")
 
 
 if __name__ == "__main__":
